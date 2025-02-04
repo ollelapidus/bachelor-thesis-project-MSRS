@@ -76,8 +76,9 @@ for c in c_2:
         for id in class2ids[c]:
             from_front[i].append(id)
             total_used[i] += job_time[id]
-        closed_machines.add(i)
-        i += 1
+        if total_used[i] >= T:
+            closed_machines.add(i)
+            i += 1
     else:
         c1 = set()
         c2 = set()
@@ -135,12 +136,11 @@ for i in range(m):
         machine_assign[id] = i
         time_assign[id] = time
         time += job_time[id]
-    time = (3/2) * T
+    time = (5/3) * T
     for id in from_back[i]:
         machine_assign[id] = i
         time_assign[id] = time - job_time[id]
         time -= job_time[id]
-
 
 ## Verify possilbility
 for id in range(n):
