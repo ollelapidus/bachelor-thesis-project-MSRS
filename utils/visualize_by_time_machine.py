@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import numpy as np
+import random
 
 
 # Read data from file
@@ -21,14 +22,18 @@ for line in lines[1:]:
     job_time.append(float(dur))
     job_class.append(int(cls))
 
-
+unique_classes = list(set(job_class))
+random.shuffle(unique_classes)
+num_classes = len(unique_classes)
 
 # Compute the last end time (max end time of any job)
 last_end_time = max(time_assign[i] + job_time[i] for i in range(n))
 
 # Generate colors for job classes
-cmap = plt.get_cmap("tab10")
-class_colors = {cls: cmap(cls % 10) for cls in set(job_class)}
+cmap = plt.get_cmap("hsv")
+
+class_colors = {cls: cmap(i / num_classes) for i, cls in enumerate(unique_classes)}
+#class_colors = {cls: cmap(cls % 10) for cls in set(job_class)}
 
 fig, ax = plt.subplots(figsize=(10, 6))
 
@@ -88,8 +93,8 @@ ax.set_xlim(0, m * machine_width)
 ax.set_ylim(0, last_end_time)
 
 # Add legend
-handles = [patches.Patch(color=class_colors[cls], label=f"Class {cls}") for cls in class_colors]
-ax.legend(handles=handles, loc="upper right")
+#handles = [patches.Patch(color=class_colors[cls], label=f"Class {cls}") for cls in class_colors]
+#ax.legend(handles=handles, loc="upper right")
 
 plt.grid(axis="y", linestyle="--", alpha=0.7)
 plt.show()

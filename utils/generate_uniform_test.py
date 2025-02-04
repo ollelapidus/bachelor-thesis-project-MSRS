@@ -1,6 +1,6 @@
 import random
 
-machine_count = random.randint(1, 100)
+machine_count = random.randint(20, 30)
 job_count = random.randint(machine_count + 1, 10 * machine_count)
 class_count = random.randint(machine_count + 1, job_count)
 

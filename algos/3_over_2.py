@@ -35,7 +35,11 @@ T = max(
     ),
     sum(sorted(job_time)[m-1:m+1])
 )
-
+print((1/m * sum(job_time),
+    max(
+        [sum([job_time[x] for x in class2ids[c]]) for c in classes]
+    ),
+    sum(sorted(job_time)[m-1:m+1])))
 print(f"Lower bound for optimal solution: T = {T}")
 
 ## Simplify problem instance by combining jobs ##
@@ -131,12 +135,8 @@ from_back = [[] for i in range(m)]
 open_machines = [i for i in range(m-1,-1,-1)]
 total_time = [0] * m
 
-u = True
 def schedule_combined_job(machine_id, combined_job_id, from_start_bool):
-    global u
     for id in combined_jobs[combined_job_id]:
-        assert (id != 95 or (u))
-        if id == 95: u = False
         if from_start_bool:
             from_front[machine_id].append(id)
         else:
@@ -231,6 +231,27 @@ while len(M_h) >= 2 and len(c_b_3_4) + len(c_3_4) >= 2: # Step 8
     schedule_combined_job(m3, class2combined[c1][1], True)
     schedule_combined_job(m3, class2combined[c2][1], False)
 
+# Step 9?
+
+if len(M_h) == 1: # Step 10
+    mh = M_h.pop()
+    c = None
+    if len(c_3_4) > 0:
+        c = c_3_4.pop()
+    elif len(c_1_2) > 0:
+        c = c_1_2.pop()
+    if c is not None:
+        i = 0
+        if (1/4) * T < combined_jobs_time[class2combined[c][1]] <= (1/2) * T:
+            i = 1
+        schedule_combined_job(mh, class2combined[c][i], False)
+        to_check_rotate.add(mh)
+    
+    class2combined[c] = [class2combined[c][1-i]]
+    if combined_jobs_time[class2combined[c][0]] > (1/2) * T:
+        c_1_2.add(c)
+    else:
+        c_small.add(c)
 
 while len(open_machines) > 0:
     M = open_machines.pop()
@@ -242,7 +263,7 @@ while len(open_machines) > 0:
 ## Algorithm_no_huge ##
 c_3_4 = c_3_4.union(c_b_3_4)
 c_1_2 = c_1_2.union(c_b_1_2)
-while len(c_1_2) >= 2:
+while len(c_1_2) >= 2: # Step 2
     c1 = c_1_2.pop()
     c2 = c_1_2.pop()
     M = open_machines.pop()
@@ -252,7 +273,8 @@ while len(c_1_2) >= 2:
     schedule_combined_job(M, class2combined[c2][1], False)
 
 
-while len(c_3_4) >= 4:
+
+while len(c_3_4) >= 4: # Step 3
     c1 = c_3_4.pop()
     c2 = c_3_4.pop()
     c3 = c_3_4.pop()
@@ -273,7 +295,8 @@ while len(c_3_4) >= 4:
     schedule_combined_job(M3, class2combined[c4][0], False)
     schedule_combined_job(M3, class2combined[c4][1], False)
 
-if len(c_1_2) == 1 and len(c_3_4) >= 2:
+
+if len(c_1_2) == 1 and len(c_3_4) >= 2: # Step 4
     c1 = c_3_4.pop()
     c2 = c_3_4.pop()
     c3 = c_1_2.pop()
@@ -283,20 +306,21 @@ if len(c_1_2) == 1 and len(c_3_4) >= 2:
 
     schedule_combined_job(M1, class2combined[c1][1], False)
     schedule_combined_job(M1, class2combined[c3][0], True)
+    schedule_combined_job(M1, class2combined[c3][1], True)
 
     schedule_combined_job(M2, class2combined[c1][0], True)
     schedule_combined_job(M2, class2combined[c2][0], False)
     schedule_combined_job(M2, class2combined[c2][1], False)
 
 
-if len(c_1_2) + len(c_3_4) == 1:
+if len(c_1_2) + len(c_3_4) == 1: # Step 5
     c = (c_1_2.union(c_3_4)).pop()
     M = open_machines.pop()
     for id in class2combined[c]:
         schedule_combined_job(M, id, True)
     open_machines.append(M)
 
-elif len(c_1_2) == 1 and len(c_3_4) == 1:
+elif len(c_1_2) == 1 and len(c_3_4) == 1: #Step 6
     c1 = c_3_4.pop()
     c2 = c_1_2.pop()
 
@@ -304,16 +328,18 @@ elif len(c_1_2) == 1 and len(c_3_4) == 1:
     M2 = open_machines.pop()
 
     i,j = class2combined[c1]
-    k, = class2combined[c2]
+    k,l = class2combined[c2]
 
-    if combined_jobs_time[i] + combined_jobs_time[j] + combined_jobs_time[k] <= (3/2) * T:
+    if combined_jobs_time[i] + combined_jobs_time[j] + combined_jobs_time[k] + combined_jobs_time[l] <= (3/2) * T:
         schedule_combined_job(M1, i, True)
         schedule_combined_job(M1, j, True)
         schedule_combined_job(M1, k, True)
+        schedule_combined_job(M1, l, True)
     else:
-        schedule_combined_job(M1, i, True)
         schedule_combined_job(M1, k, True)
-        schedule_combined_job(M2, j, False)
+        schedule_combined_job(M1, l, True)
+        schedule_combined_job(M1, j, False)
+        schedule_combined_job(M2, i, True)
     open_machines.append(M2)
 
 elif len(c_1_2) == 0 and len(c_3_4) == 2:
@@ -452,7 +478,6 @@ for id in range(n):
 
     for id2 in range(n):
         if id == id2: continue
-
         # Jobs of same class or assigned to same machine must not run at same time
         if job_class[id] == job_class[id2] or machine_assign[id] == machine_assign[id2]:
             assert (
