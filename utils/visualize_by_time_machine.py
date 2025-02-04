@@ -49,12 +49,13 @@ for i in range(n):
     ax.add_patch(rect)
     
     # Add text inside the job block
-    ax.text(
-        machine_assign[i] * machine_width + machine_width / 2, 
-        time_assign[i] + job_time[i] / 2, 
-        f"id = {i}",  # Updated text format
-        ha='center', va='center', fontsize=10, color='white'
-    )
+    if m < 10:
+        ax.text(
+            machine_assign[i] * machine_width + machine_width / 2, 
+            time_assign[i] + job_time[i] / 2, 
+            f"id = {i}",  # Updated text format
+            ha='center', va='center', fontsize=10, color='white'
+        )
 
 # Bounding box around all jobs (from time 0 to last job end time)
 bounding_rect = patches.Rectangle(
