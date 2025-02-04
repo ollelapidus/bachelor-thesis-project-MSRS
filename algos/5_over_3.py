@@ -68,7 +68,6 @@ for c in cb:
         total_used[i] += job_time[id]
     i += 1
 
-
 i = 0
 for c in c_2:
     processing_time = sum([job_time[id] for id in class2ids[c]])
@@ -83,13 +82,23 @@ for c in c_2:
         c1 = set()
         c2 = set()
         # Target: c = c1 + c2, p(c2) <= p(c1) <= 2/3 T
+        # Start with all in c2, move greedily to c1
         c1_time = 0
+        c2_time = processing_time
+
+        # Sort just to add largest first -- inefficient, can be improved
+        class2ids[c] = sorted(class2ids[c], 
+                              key = lambda id: job_time[id],
+                              reverse=True
+                              )
+
         for id in class2ids[c]:
-            if c1_time <= (2/3) * T and processing_time - c1_time <= (2/3) * T:
+            if c1_time <= (2/3) * T and c2_time <= (2/3) * T:
                 c2.add(id)
             else:
                 c1.add(id)
                 c1_time += job_time[id]
+                c2_time -= job_time[id]
         if c1_time < processing_time - c1_time:
             c1, c2 = c2, c1
         # Target reached!
@@ -118,3 +127,4 @@ for c in c_3:
 
 for i in range(m):
     print(from_front[i], from_back[i])
+    
