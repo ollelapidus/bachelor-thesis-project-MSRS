@@ -30,7 +30,7 @@ num_classes = len(unique_classes)
 last_end_time = max(time_assign[i] + job_time[i] for i in range(n))
 
 # Generate colors for job classes
-cmap = plt.get_cmap("hsv")
+cmap = plt.get_cmap("gist_ncar")
 
 class_colors = {cls: cmap(i / num_classes) for i, cls in enumerate(unique_classes)}
 #class_colors = {cls: cmap(cls % 10) for cls in set(job_class)}
