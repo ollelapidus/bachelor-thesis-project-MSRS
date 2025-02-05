@@ -1,5 +1,9 @@
-# bachelor-thesis-project
+# bachelor-thesis-project-MSRS
 
-Run ./generate.sh to create test files. Test files are untracked by git.
+Code used for testing algorithms for Many Shared Resources Scheduling (MSRS) problem.
 
-Run ./test_visualize.sh with algorithm and test file as input to show visualization of solution found.
+## Usage
+
+Run `./generate.sh` to create test files. Test files are untracked by git.
+
+Run `./visualize.sh algos/... tests/...` with algorithm and test file as input to show visualization of solution found.
