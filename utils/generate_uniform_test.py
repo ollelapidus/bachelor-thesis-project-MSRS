@@ -1,4 +1,7 @@
 import random
+import sys
+
+random.seed(sys.argv[-1])
 
 machine_count = random.randint(20, 30)
 job_count = random.randint(machine_count + 1, 10 * machine_count)

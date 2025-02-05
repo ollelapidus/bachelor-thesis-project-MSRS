@@ -3,6 +3,7 @@
 # List of Python scripts and their labels
 declare -A script_labels=(
     ["generate_uniform_test.py"]="uniform"
+    ["generate_test_by_solution.py"]="has_perfect"
 )
 
 # Number of times each script should run
