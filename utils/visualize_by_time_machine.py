@@ -1,6 +1,6 @@
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-import numpy as np
+import matplotlib.pyplot as plt # type: ignore
+import matplotlib.patches as patches # type: ignore
+import numpy as np # type: ignore
 import random
 
 
