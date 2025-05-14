@@ -18,4 +18,4 @@ echo "Running vis"
 python3 utils/visualize_by_time_machine.py
 
 # Remove temp file
-rm temp.txt
+# rm temp.txt

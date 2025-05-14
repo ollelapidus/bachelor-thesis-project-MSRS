@@ -58,6 +58,7 @@ for c in classes:
     if c not in cb and c not in c_2:
         c_3.add(c)
 
+
 closed_machines = set()
 total_used = [0] * m
 i = 0
@@ -75,7 +76,7 @@ for c in c_2:
         for id in class2ids[c]:
             from_front[i].append(id)
             total_used[i] += job_time[id]
-        if total_used[i] > T:
+        if total_used[i] >= T:
             closed_machines.add(i)
             i += 1
     else:
@@ -141,6 +142,27 @@ for i in range(m):
         time_assign[id] = time - job_time[id]
         time -= job_time[id]
 
+## Downshift
+order = [i for i in range(n)]
+order = sorted(order, key = lambda i : time_assign[i])
+
+last_placed_on_machine = [-1]*m
+machine_load = [0]*m
+
+for i in order:
+    cid = job_class[i]
+    mid = 0
+    for j in range(m):
+        if last_placed_on_machine[j] == cid:
+            mid = j
+            break
+        if machine_load[j] < machine_load[mid]:
+            mid = j
+    machine_assign[i] = mid
+    time_assign[i] = machine_load[mid]
+    machine_load[mid] += job_time[i]
+    last_placed_on_machine[mid] = cid
+
 ## Verify possilbility
 for id in range(n):
     assert (
@@ -166,7 +188,7 @@ for id in range(n):
 fraction = makespan / T
 
 print(f"Makspan: {makespan}")
-print(f"Fraction: {fraction:.2f}")
+print(f"Fraction: {fraction:.3f}")
 print(f"Percentage over: {(fraction-1)*100:.2f}%")
 # Save data to file
 if "--write" in sys.argv:

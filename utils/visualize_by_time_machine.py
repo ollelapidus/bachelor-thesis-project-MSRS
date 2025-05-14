@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt # type: ignore
 import matplotlib.patches as patches # type: ignore
 import numpy as np # type: ignore
 import random
-
+random.seed(6215)
 
 # Read data from file
 with open("temp.txt", "r") as f:
@@ -54,13 +54,13 @@ for i in range(n):
     ax.add_patch(rect)
     
     # Add text inside the job block
-    if m < 10:
+    """if m < 10:
         ax.text(
             machine_assign[i] * machine_width + machine_width / 2, 
             time_assign[i] + job_time[i] / 2, 
             f"id = {i}",  # Updated text format
             ha='center', va='center', fontsize=10, color='white'
-        )
+        )"""
 
 # Bounding box around all jobs (from time 0 to last job end time)
 bounding_rect = patches.Rectangle(
@@ -82,12 +82,11 @@ if last_end_time not in yticks:  # Ensure last_end_time is included if it's not 
 yticks = sorted(yticks)
 
 # Labels and formatting
-ax.set_xlabel("Machines")
+ax.set_xlabel("Machine")
 ax.set_ylabel("Time")
 ax.set_xticks(np.arange(m) * machine_width + machine_width / 2)
 ax.set_xticklabels(range(m))
 ax.set_yticks(yticks)
-ax.set_title("Job Scheduling Visualization")
 ax.invert_yaxis()  # Time flows downward
 ax.set_xlim(0, m * machine_width)
 ax.set_ylim(0, last_end_time)
@@ -97,5 +96,7 @@ ax.set_ylim(0, last_end_time)
 #ax.legend(handles=handles, loc="upper right")
 
 plt.grid(axis="y", linestyle="--", alpha=0.7)
+
+plt.savefig("imgs/5_3_enqueue.png")
 plt.show()
 

@@ -152,9 +152,7 @@ while len(c_h) > 0: # Step 2
     x = c_h.pop()
     M = open_machines.pop()
     schedule_combined_job(M, class2combined[x][0], True)
-
-    if total_time[M] < T:
-        M_h.append(M)
+    M_h.append(M)
 M_h = M_h[::-1]
 while len(M_h) > 0: # Step 3
     if len(c_small) == 0:
@@ -193,11 +191,12 @@ if len(M_h) == 1: # Step 5
         schedule_combined_job(mh, class2combined[c][i], False)
         to_check_rotate.add(mh)
     
-    class2combined[c] = [class2combined[c][i-1]]
+    class2combined[c] = [class2combined[c][1-i]]
     if combined_jobs_time[class2combined[c][0]] > (1/2) * T:
         c_1_2.add(c)
     else:
         c_small.add(c)
+
 c_b_1_2 = set([c for c in c_b if class_time[c] < (3/4) * T])
 c_b_3_4 = set([c for c in c_b if class_time[c] >= (3/4) * T])
 while len(M_h) >= 1 and len(c_b_1_2) >= 1 and len(c_3_4) >= 1: # Step 6
@@ -471,6 +470,28 @@ for i in range(m):
         time_assign[id] = time - job_time[id]
         time -= job_time[id]
 
+
+## Downshift
+order = [i for i in range(n)]
+order = sorted(order, key = lambda i : time_assign[i])
+
+last_placed_on_machine = [-1]*m
+machine_load = [0]*m
+
+for i in order:
+    cid = job_class[i]
+    mid = 0
+    for j in range(m):
+        if last_placed_on_machine[j] == cid:
+            mid = j
+            break
+        if machine_load[j] < machine_load[mid]:
+            mid = j
+    machine_assign[i] = mid
+    time_assign[i] = machine_load[mid]
+    machine_load[mid] += job_time[i]
+    last_placed_on_machine[mid] = cid
+
 ## Verify possilbility
 for id in range(n):
     assert (
@@ -488,7 +509,6 @@ for id in range(n):
             )
 
 print("Assignment works.")
-
 
 makespan = 0
 for id in range(n):
